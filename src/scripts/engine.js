@@ -1,40 +1,48 @@
-const pianoKeys = document.querySelectorAll(".piano-keys .key");
-const volumeSlider = document.querySelector(".volume-slider input");
-const keysCheck = document.querySelector(".keys-check input");
+document.addEventListener('DOMContentLoaded', () => {
+  const pianoKeys = document.querySelectorAll('.piano-keys .key');
+  const volumeSlider = document.querySelector('.volume-slider input');
+  const keysCheck = document.querySelector('.keys-check input');
 
-let mapedKeys = [];
-let audio = new Audio("src/tunes/a.wav");
+  let mappedKeys = [];
+  const audio = new Audio('src/tunes/a.wav');
 
-const playTune = (key) => {
-  audio.src = `src/tunes/${key}.wav`;
-  audio.play();
+  const playTune = (key) => {
+    audio.src = `src/tunes/${key}.wav`;
+    audio.play();
 
-  const clickedKey = document.querySelector(`[data-key="${key}"]`);
-  clickedKey.classList.add("active");
-  setTimeout(() => {
-    clickedKey.classList.remove("active");
-  }, 150);
-};
+    const clickedKey = document.querySelector(`[data-key="${key}"]`);
+    if (clickedKey) {
+      clickedKey.classList.add('active');
+      setTimeout(() => {
+        clickedKey.classList.remove('active');
+      }, 150);
+    }
+  };
 
-pianoKeys.forEach((key) => {
-  key.addEventListener("click", () => playTune(key.dataset.key));
-  mapedKeys.push(key.dataset.key);
+  const handleKeyPress = (event) => {
+    if (mappedKeys.includes(event.key)) {
+      playTune(event.key);
+    }
+  };
+
+  const handleVolumeChange = (event) => {
+    audio.volume = event.target.value;
+  };
+
+  const toggleKeysVisibility = () => {
+    pianoKeys.forEach((key) => key.classList.toggle('hide'));
+  };
+
+  const initializePiano = () => {
+    pianoKeys.forEach((key) => {
+      key.addEventListener('click', () => playTune(key.dataset.key));
+      mappedKeys.push(key.dataset.key);
+    });
+
+    document.addEventListener('keydown', handleKeyPress);
+    volumeSlider.addEventListener('input', handleVolumeChange);
+    keysCheck.addEventListener('click', toggleKeysVisibility);
+  };
+
+  initializePiano();
 });
-
-document.addEventListener("keydown", (e) => {
-  if (mapedKeys.includes(e.key)) {
-    playTune(e.key);
-  }
-});
-
-const handleVolume = (e) => {
-  audio.volume = e.target.value;
-};
-
-const showHideKeys = () => {
-  pianoKeys.forEach((key) => key.classList.toggle("hide"));
-};
-
-volumeSlider.addEventListener("input", handleVolume);
-
-keysCheck.addEventListener("click", showHideKeys);
